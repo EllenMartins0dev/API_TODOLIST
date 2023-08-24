@@ -31,6 +31,8 @@ public class  TodoController {
         return this.todoRepo.save(tarefa);
     }
 
+
+    // Deleta a tarefa (botão deletar)
     @DeleteMapping("/{tarefaId}")
     public ResponseEntity<Void> delete(@PathVariable Integer tarefaId) {
         Optional<Todo> todo = this.todoRepo.findById(tarefaId);
@@ -41,5 +43,45 @@ public class  TodoController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    // Inicializa a tarefa (botão iniciar)
+    @PutMapping("/{todoId}/start_task")
+    public ResponseEntity<Todo> startTask(@PathVariable Integer todoId) {
+      Todo todoDatabase = this.todoRepo.findById(todoId).get();
+      if (todoDatabase != null) {
+          todoDatabase.setStatus(StatusEnum.IN_PROGRESS);
+          this.todoRepo.save(todoDatabase);
+          return ResponseEntity.ok(todoDatabase);
+      } else {
+          return ResponseEntity.notFound().build();
+      }
+    }
+
+    // Finaliza a tarefa (botão finalizar)
+    @PutMapping("/{todoId}/end_task")
+    public ResponseEntity<Todo> endTask(@PathVariable Integer todoId) {
+        Todo todoDatabase = this.todoRepo.findById(todoId).get();
+        if (todoDatabase != null) {
+            todoDatabase.setStatus(StatusEnum.FINISHED);
+            this.todoRepo.save(todoDatabase);
+            return ResponseEntity.ok(todoDatabase);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+// Atualiza a tarefa (botão editar)
+    @PutMapping("/{todoId}")
+    public ResponseEntity<Todo> update(@PathVariable Integer todoId, @RequestBody Todo todo) {
+        Todo todoDatabase = this.todoRepo.findById(todoId).get();
+        if (todoDatabase != null) {
+            todoDatabase.setTitle(todo.getTitle());
+            todoDatabase.setDescription(todo.getDescription());
+            this.todoRepo.save(todoDatabase);
+            return ResponseEntity.ok(todoDatabase);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
 
